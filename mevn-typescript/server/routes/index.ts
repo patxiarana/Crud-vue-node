@@ -16,27 +16,46 @@ router.get('/tasks' , async (req,res) => {
 })
 
 
-router.post('/tasks' , (req,res) => {
+router.post('/tasks' , async (req,res) => {
   const {title, description} = req.body 
 
  const newTask =  new Task({title,description}) ; 
- console.log(newTask)
-    res.send("creating task") ; 
+    
+      await newTask.save();
+    res.json(newTask) ; 
 
 })
 
-router.get('/tasks/:id' , (req,res) => {
-    res.send("getting a task") ; 
+router.get('/tasks/:id' , async(req,res) => {
+    try {
+ console.log(req.params) 
+ const task = await  Task.findById(req.params.id)
+ if(!task){
+    return res.status(404).json({'mesagge':'task not found'}) ; 
+ }
+res.send(task) ; 
+    }catch(error) {
+    return res.status(500).send(error)
+    }
 
 })
 
-router.delete('/tasks/:id' , (req,res) => {
-    res.send("deleting a task") ; 
+router.delete('/tasks/:id' , async (req,res) => {
+try {
+    const task =  await Task.findByIdAndDelete(req.params.id)
+    if(!task) return res.status(404).json({'message': 'Task not found'})
+    return res.json(task)
 
+}catch(error){
+    return res.status(500).send(error); 
+}
 })
 
-router.put('/tasks/:id' , (req,res) => {
-    res.send("updating a task") ; 
+router.put('/tasks/:id' , async (req,res) => {
+  const updateTask = await Task.findByIdAndUpdate(req.params.id , req.body, {
+    new : true , 
+  }) 
+  res.json(updateTask)
 
 })
 

@@ -15,7 +15,10 @@ import {Schema, model} from 'mongoose' ;
         type : Boolean ,
         default: false , 
     }
-})
+} , {
+    versionKey : false , 
+} , 
+)
 
 
 export default model('Task' , tasksSchema)
